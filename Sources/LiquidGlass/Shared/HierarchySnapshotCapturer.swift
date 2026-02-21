@@ -43,7 +43,7 @@ class HierarchySnapshotCapturer {
             let originalAlpha = glassView.layer.opacity
             glassView.layer.opacity = 0.0
             
-            targetView.layer.render(in: ctx.cgContext)
+            targetView.drawHierarchy(in: targetView.bounds, afterScreenUpdates: false)
             
             glassView.layer.opacity = originalAlpha
         }

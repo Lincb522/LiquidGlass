@@ -133,7 +133,10 @@ struct MetalShaderView: UIViewRepresentable {
             encoder.setFragmentBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 0)
 
             backgroundProvider.blurRadius = Float(blurScale) * 30.0
-            let snapshotTexture = backgroundProvider.currentTexture(for: mtkView!)
+            guard let snapshotTexture = backgroundProvider.currentTexture(for: mtkView!) else {
+                encoder.endEncoding()
+                return
+            }
             encoder.setFragmentTexture(snapshotTexture, index: 0)
             encoder.setFragmentSamplerState(samplerState, index: 0)
 
