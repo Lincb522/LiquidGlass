@@ -115,9 +115,19 @@ struct MetalShaderView: UIViewRepresentable {
                 time: Float(CFAbsoluteTimeGetCurrent() - startTime),
                 blurScale: Float(blurScale),
                 boxSize: SIMD2<Float>(Float(view.drawableSize.width), Float(view.drawableSize.height)),
-                cornerRadius: Float(cornerRadius * view.contentScaleFactor),
-                tintColor: SIMD3<Float>(Float(tintColor.components?[safe: 0] ?? 0), Float(tintColor.components?[safe: 1] ?? 0), Float(tintColor.components?[safe: 2] ?? 0)),
-                tintAlpha: Float(tintColor.components?.last ?? 0)
+                cornerRadius: min(Float(cornerRadius * view.contentScaleFactor), min(Float(view.drawableSize.width), Float(view.drawableSize.height)) / 2.0),
+                tintColor: {
+                    let uiColor = UIColor(cgColor: tintColor)
+                    var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+                    uiColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+                    return SIMD3<Float>(Float(r), Float(g), Float(b))
+                }(),
+                tintAlpha: {
+                    let uiColor = UIColor(cgColor: tintColor)
+                    var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+                    uiColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+                    return Float(a)
+                }()
             )
             encoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 0)
             encoder.setFragmentBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 0)
